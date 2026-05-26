@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hijri Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'ArabicCustom';
+            src: url('arabic.ttf') format('truetype');
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background: transparent;
+            padding-top: 60px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+
+            cursor: pointer;
+        }
+
+        .today-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background: transparent;
+            color: var(--ios-green);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1.5px solid var(--ios-green);
+        }
+
+        .calendar-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .month-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .hijri-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ios-green);
+        }
+
+        .greg-title {
+            font-size: 12px;
+            color: var(--text-sec);
+            font-weight: 500;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            color: var(--ios-green);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .weekday {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sec);
+            padding: 5px 0;
+            text-transform: uppercase;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            font-size: 13px;
+            transition: 0.2s;
+            background: rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .day-cell.today {
+            background: var(--ios-green) !important;
+            color: white !important;
+            font-weight: 700;
+        }
+
+        .day-cell.active {
+            border: 2px solid var(--ios-green);
+        }
+
+        .day-cell .greg {
+            font-size: 9px;
+            opacity: 0.6;
+            margin-top: 2px;
+        }
+
+        .event-dot {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 4px;
+            height: 4px;
+            background: red;
+            border-radius: 50%;
+        }
+
+        .list-container {
+            width: 100%;
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 0 20px 100px;
+            scrollbar-width: none;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-label { font-size: 14px; color: var(--text-sec); }
+        .info-value { font-weight: 400; color: var(--text-main); text-align: right; }
+        .arabic-text { font-family: 'ArabicCustom', serif; }
+
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(242, 242, 247, 0.1); 
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000;
+        }
+
+        .loader-icon {
+            color: var(--ios-green);
+            font-size: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loader"><i class="fa-solid fa-circle-notch loader-icon"></i></div>
+
+<div class="top-section">
+    <a href="javascript:void(0)" onclick="history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+    <button class="today-btn" onclick="goToToday()">Today</button>
+    <div class="calendar-card">
+        <div class="header-nav">
+            <button class="nav-btn" onclick="moveMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="month-title">
+                <span id="hijriMonthDisplay" class="hijri-title">Loading...</span>
+                <span id="gregMonthDisplay" class="greg-title"></span>
+            </div>
+            <button class="nav-btn" onclick="moveMonth(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+</div>
+
+<div class="list-container" id="detailsContainer"></div>
+
+<script>
+    let viewDate = new Date();
+    let currentMonthData = [];
+
+    async function loadCalendar() {
+        document.getElementById('loader').style.display = 'flex';
+        const m = viewDate.getMonth() + 1;
+        const y = viewDate.getFullYear();
+        const cacheKey = `hijri_data_${m}_${y}`;
+        const lastUpdateKey = `last_update_${m}_${y}`;
+        const todayDate = new Date().toDateString();
+        
+        const cached = localStorage.getItem(cacheKey);
+        const lastUpdate = localStorage.getItem(lastUpdateKey);
+
+        if (cached && lastUpdate === todayDate) {
+            currentMonthData = JSON.parse(cached);
+            renderUI(currentMonthData);
+            document.getElementById('loader').style.display = 'none';
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://api.aladhan.com/v1/gToHCalendar/${m}/${y}`);
+            const data = await response.json();
+            if(data.code === 200) {
+                currentMonthData = data.data;
+                localStorage.removeItem(cacheKey);
+                localStorage.setItem(cacheKey, JSON.stringify(currentMonthData));
+                localStorage.setItem(lastUpdateKey, todayDate);
+                renderUI(currentMonthData);
+            }
+        } catch (error) {
+            if(cached) {
+                currentMonthData = JSON.parse(cached);
+                renderUI(currentMonthData);
+            }
+            console.error(error);
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
+    }
+
+    function renderUI(days) {
+        const grid = document.getElementById('calendarGrid');
+        const hijriDisplay = document.getElementById('hijriMonthDisplay');
+        const gregDisplay = document.getElementById('gregMonthDisplay');
+        
+        grid.innerHTML = `
+            <div class="weekday">Sun</div><div class="weekday">Mon</div>
+            <div class="weekday">Tue</div><div class="weekday">Wed</div>
+            <div class="weekday">Thu</div><div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+        `;
+
+        const hijriMonth = days[0].hijri.month.en;
+        const hijriYear = days[0].hijri.year;
+        const gregMonth = days[0].gregorian.month.en;
+        const gregYear = days[0].gregorian.year;
+
+        hijriDisplay.innerText = `${hijriMonth} ${hijriYear} AH`;
+        gregDisplay.innerText = `${gregMonth} ${gregYear}`;
+
+        const firstDayParts = days[0].gregorian.date.split('-');
+        const firstDayDate = new Date(`${firstDayParts[2]}-${firstDayParts[1]}-${firstDayParts[0]}`);
+        const startOffset = firstDayDate.getDay();
+
+        for(let i=0; i < startOffset; i++) {
+            grid.innerHTML += `<div></div>`;
+        }
+
+        const todayRaw = new Date();
+        const todayStr = `${String(todayRaw.getDate()).padStart(2, '0')}-${String(todayRaw.getMonth()+1).padStart(2, '0')}-${todayRaw.getFullYear()}`;
+
+        let selectedIndex = 0;
+        days.forEach((day, index) => {
+            const isToday = day.gregorian.date === todayStr;
+            const hasEvent = day.hijri.holidays.length > 0;
+            
+            const cell = document.createElement('div');
+            cell.className = `day-cell ${isToday ? 'today' : ''}`;
+            cell.innerHTML = `
+                <span>${day.hijri.day}</span>
+                <span class="greg">${day.gregorian.day}</span>
+                ${hasEvent ? '<div class="event-dot"></div>' : ''}
+            `;
+            cell.onclick = () => showDetails(index);
+            grid.appendChild(cell);
+
+            if(isToday) selectedIndex = index;
+        });
+
+        showDetails(selectedIndex);
+    }
+
+    function showDetails(index) {
+        const targetDay = currentMonthData[index];
+        const details = document.getElementById('detailsContainer');
+        const cells = document.querySelectorAll('.day-cell');
+        
+        cells.forEach(c => c.classList.remove('active'));
+        const gridItems = document.getElementById('calendarGrid').children;
+        const firstDayParts = currentMonthData[0].gregorian.date.split('-');
+        const startOffset = new Date(`${firstDayParts[2]}-${firstDayParts[1]}-${firstDayParts[0]}`).getDay();
+        
+        if(gridItems[index + startOffset + 7]) {
+            gridItems[index + startOffset + 7].classList.add('active');
+        }
+
+        details.innerHTML = `
+            <div class="info-card">
+                <span class="info-label">Hijri Date</span>
+                <span class="info-value">${targetDay.hijri.day} ${targetDay.hijri.month.en} ${targetDay.hijri.year}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Arabic Name</span>
+                <span class="info-value arabic-text">${targetDay.hijri.month.ar}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Gregorian Date</span>
+                <span class="info-value">${targetDay.gregorian.date}</span>
+            </div>
+            <div class="info-card">
+                <span class="info-label">Weekday</span>
+                <span class="info-value">${targetDay.gregorian.weekday.en}</span>
+            </div>
+             <div class="info-card">
+                <span class="info-label">Islamic Events</span>
+                <span class="info-value">${targetDay.hijri.holidays.length > 0 ? targetDay.hijri.holidays.join(', ') + ' (' + targetDay.hijri.day + ' ' + targetDay.hijri.month.en + ')' : 'None'}</span>
+            </div>
+        `;
+    }
+
+    function moveMonth(step) {
+        viewDate.setMonth(viewDate.getMonth() + step);
+        loadCalendar();
+    }
+
+    function goToToday() {
+        viewDate = new Date();
+        loadCalendar();
+    }
+
+    loadCalendar();
+</script>
+
+</body>
+</html>

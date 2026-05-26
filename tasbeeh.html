@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Tasbeeh & Dhikr</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        @font-face {
+            font-family: 'LocalArabic';
+            src: url('arabic.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'LocalUrdu';
+            src: url('urdu.ttf') format('truetype');
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background: transparent;
+            padding-top: 60px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            
+            cursor: pointer;
+        }
+
+        .counter-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .active-zikr-ar {
+            font-family: 'LocalArabic', 'Cairo', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 2px;
+            min-height: 38px;
+        }
+
+        .active-zikr-en {
+            font-size: 14px;
+            color: var(--text-sec);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .target-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .target-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sec);
+            text-transform: uppercase;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            width: 80px;
+        }
+
+        .custom-select-trigger {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 4px 24px 4px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--ios-green);
+            cursor: pointer;
+            text-align: left;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .custom-select-trigger::after {
+            content: '\f0d7';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 10px;
+            font-size: 11px;
+            color: var(--ios-green);
+            pointer-events: none;
+        }
+
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .custom-options.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.1s;
+        }
+
+        .custom-option:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-option:hover {
+            background: rgba(45, 106, 79, 0.1);
+            color: var(--ios-green);
+        }
+
+        .custom-option.selected {
+            background: var(--ios-green);
+            color: white;
+        }
+
+        .counter-display {
+            font-size: 55px;
+            font-weight: 600;
+            color: var(--ios-green);
+            margin: 5px 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+
+        .btn-ctrl {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-sec);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-ctrl:active { transform: scale(0.9); }
+
+        .btn-tap {
+            width: 75px;
+            height: 75px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ios-green);
+            
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid var(--glass-border);
+        }
+
+        .btn-tap:active {
+            transform: scale(0.95);
+            background: #f8f9fa;
+        }
+
+        .list-container {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 0 20px 0px;
+            scrollbar-width: none;
+            box-sizing: border-box;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+
+        .list-scroll-content {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 120px;
+        }
+
+        .zikr-item {
+            background: rgba(255, 255, 255, 0.4);
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .zikr-item:activate, .zikr-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .zikr-item.active-card {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: var(--ios-green);
+            
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .info-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            flex: 1; 
+            min-width: 0; 
+        }
+        
+        .num-circle {
+            width: 35px; 
+            height: 35px;
+            background: rgba(45, 106, 79, 0.1);
+            color: var(--ios-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+            min-width: 0;
+        }
+
+        .en-name { font-weight: 600; color: var(--text-main); line-height: 1.2; }
+
+        .right-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            text-align: right;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .ar-name { 
+            font-family: 'LocalArabic', 'Cairo', serif; 
+            font-size: 20px; 
+            font-weight: 700; 
+            color: #1b4332; 
+            direction: rtl; 
+            line-height: 1.2;
+        }
+
+        .ur-meaning { 
+            font-family: 'LocalUrdu', -apple-system, sans-serif;
+            font-size: 13px;
+            color: var(--text-sec);
+            line-height: 1.3;
+            direction: rtl;
+            margin-top: 8px;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .ur-benefit {
+            font-family: 'LocalUrdu', -apple-system, sans-serif;
+            font-size: 12px;
+            color: #495057;
+            line-height: 1.4;
+            direction: rtl;
+            text-align: right;
+            width: 100%;
+        }
+
+        .ios-alert-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .ios-alert-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ios-alert-box {
+            background: rgba(255, 255, 255, 0.9);
+            width: 270px;
+            border-radius: 14px;
+            text-align: center;
+            
+            overflow: hidden;
+            transform: scale(1.1);
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .ios-alert-overlay.show .ios-alert-box {
+            transform: scale(1);
+        }
+
+        .ios-alert-content {
+            padding: 20px 16px;
+        }
+
+        .ios-alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .ios-alert-msg {
+            font-size: 13px;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .ios-alert-buttons {
+            display: flex;
+            border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .ios-alert-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 10px;
+            font-size: 17px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .ios-alert-btn.cancel {
+            color: #007aff;
+            font-weight: 400;
+            border-right: 0.5px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .ios-alert-btn.confirm {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a href="javascript:history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+
+    <div class="counter-card" id="mainCounterCard">
+        <div class="active-zikr-ar" id="displayAr">سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ</div>
+        <div class="active-zikr-en" id="displayEn">SubhanAllahi wa Bihamdihi</div>
+        
+        <div class="target-section">
+            <span class="target-label">Target:</span>
+            <div class="custom-select-wrapper">
+                <div class="custom-select-trigger" id="customSelectTrigger">33</div>
+                <div class="custom-options" id="customOptions">
+                    <div class="custom-option selected" data-value="33">33</div>
+                    <div class="custom-option" data-value="100">100</div>
+                    <div class="custom-option" data-value="300">300</div>
+                    <div class="custom-option" data-value="500">500</div>
+                    <div class="custom-option" data-value="1000">1000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="counter-display" id="counterNum">0</div>
+
+        <div class="controls">
+            <button class="btn-ctrl" id="resetBtn" title="Reset"><i class="fas fa-rotate-left"></i></button>
+            <button class="btn-ctrl btn-tap" id="tapBtn"><i class="fa-solid fa-fingerprint"></i></button>
+            <button class="btn-ctrl" style="pointer-events: none; opacity: 0.5;" title="Target Status"><i class="fa-solid fa-circle-check" id="statusIcon"></i></button>
+        </div>
+    </div>
+</div>
+
+<div class="list-container" id="zikrList">
+    <div class="list-scroll-content" id="zikrScrollContent"></div>
+</div>
+
+<div class="ios-alert-overlay" id="iosAlert">
+    <div class="ios-alert-box">
+        <div class="ios-alert-content">
+            <div class="ios-alert-title" id="alertTitle">Reset Counter</div>
+            <div class="ios-alert-msg" id="alertMsg">Are you sure you want to reset the counter for this item?</div>
+        </div>
+        <div class="ios-alert-buttons">
+            <button class="ios-alert-btn cancel" id="alertCancel">Cancel</button>
+            <button class="ios-alert-btn confirm" id="alertConfirm">Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const zikrData = [
+        { id: 8, ar: "سُبْحَانَ ٱللَّٰهِ وَبِحَمْدِهِ", en: "SubhanAllahi wa Bihamdihi", translation: "اللہ پاک ہے اپنی تعریفوں کے ساتھ", benefit: "یہ کلمہ زبان پر ہلکا اور میزان میں بہت بھاری ہے، اس کے پڑھنے سے سمندر کی جھاگ برابر گناہ معاف ہو جاتے ہیں۔" },
+        { id: 9, ar: "سُبْحَانَ ٱللَّٰهِ ٱلْعَظِيمِ", en: "SubhanAllahil Azeem", translation: "پاک ہے اللہ عظمت والا", benefit: "یہ کلمہ رحمان کو انتہائی محبوب ہے، زبان پر ہلکا اور قیامت کے دن میزان میں اعمال کو بھاری کرنے والا ہے۔" },
+        { id: 1, ar: "سُبْحَانَ ٱللَّٰهِ", en: "SubhanAllah", translation: "اللہ کی پاکیزگی بیان کرنا", benefit: "اس کے پڑھنے سے نامہ اعمال میں بے شمار نیکیاں لکھ دی جاتی ہیں اور رضائے الٰہی حاصل ہوتی ہے۔" },
+        { id: 2, ar: "ٱلْحَمْدُ لِلَّٰهِ", en: "Alhamdulillah", translation: "تمام تعریفیں اللہ کے لیے ہیں", benefit: "یہ کلمہ شکر ہے، اس سے نعمتوں میں برکت اور اضافہ ہوتا ہے اور دل کو سکون ملتا ہے۔" },
+        { id: 3, ar: "لَا إِلَٰهَ إِلَّا ٱللَّٰهُ", en: "La Ilaha Illallah", translation: "اللہ کے سوا کوئی معبود نہیں", benefit: "یہ افضل ترین ذکر اور ایمان کی بنیاد ہے، اس کے کثرت سے پڑھنے سے خاتمہ بالخier ہوتا ہے۔" },
+        { id: 4, ar: "ٱللَّٰهُ أَكْبَرُ", en: "Allahu Akbar", translation: "اللہ سب سے بڑا ہے", benefit: "اللہ کی بڑائی کے اعتراف سے انسان کا تکبر ختم ہوتا ہے اور باطنی طاقت ملتی ہے۔" },
+        { id: 5, ar: "أَسْتَغْفِرُ ٱللَّٰهَ", en: "Astaghfirullah", translation: "میں اللہ سے معافی مانگتا ہوں", benefit: "توبہ واستغفار سے گناہ معاف ہوتے ہیں، رزق میں کشادگی ہوتی ہے اور بلائیں ٹلتی ہیں۔" },
+        { id: 6, ar: "صَلَّىٰ ٱللَّٰهُ عَلَيْهِ وَسَلَّمَ", en: "Darood Shareef", translation: "اللہ کی سلامتی ہو آپ ﷺ پر", benefit: "ایک بار درود پڑھنے سے اللہ دس رحمتیں نازل فرماتا ہے اور دعائیں قبول ہوتی ہیں۔" },
+        { id: 7, ar: "لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِٱللَّٰهِ", en: "La Hawla Wa La Quwwata", translation: "نیکی کی طاقت اور برائی سے بچنا اللہ کی توفیق سے ہے", benefit: "یہ جنت کے خزانوں میں سے ایک خزانہ ہے، جو ۹۹ بیماریوں اور پریشانیوں کا علاج ہے۔" }
+    ];
+
+    let currentActiveIndex = 0;
+    let counts = {}; 
+    let targets = {};
+    let lastTapTime = 0;
+    const tapDelay = 250;
+
+    const savedCounts = localStorage.getItem('tasbeeh_counts');
+    const savedTargets = localStorage.getItem('tasbeeh_targets');
+
+    if (savedCounts) {
+        counts = JSON.parse(savedCounts);
+        zikrData.forEach(z => {
+            if (counts[z.id] === undefined) counts[z.id] = 0;
+        });
+    } else {
+        zikrData.forEach(z => counts[z.id] = 0);
+    }
+
+    if (savedTargets) {
+        targets = JSON.parse(savedTargets);
+        zikrData.forEach(z => {
+            if (targets[z.id] === undefined) targets[z.id] = 33;
+        });
+    } else {
+        zikrData.forEach(z => targets[z.id] = 33);
+    }
+
+    const zikrScrollContent = document.getElementById('zikrScrollContent');
+    const counterNum = document.getElementById('counterNum');
+    const displayAr = document.getElementById('displayAr');
+    const displayEn = document.getElementById('displayEn');
+    const tapBtn = document.getElementById('tapBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusIcon = document.getElementById('statusIcon');
+    
+    const customSelectTrigger = document.getElementById('customSelectTrigger');
+    const customOptions = document.getElementById('customOptions');
+    
+    const iosAlert = document.getElementById('iosAlert');
+    const alertCancel = document.getElementById('alertCancel');
+    const alertConfirm = document.getElementById('alertConfirm');
+    const alertMsg = document.getElementById('alertMsg');
+
+    function renderZikrCards() {
+        zikrScrollContent.innerHTML = zikrData.map((z, index) => `
+            <div class="zikr-item ${index === currentActiveIndex ? 'active-card' : ''}" onclick="selectZikr(${index})">
+                <div class="item-row">
+                    <div class="info-left">
+                        <div class="num-circle">${counts[z.id]}</div>
+                        <div class="text-group">
+                            <div class="en-name">${z.en}</div>
+                        </div>
+                    </div>
+                    <div class="right-content">
+                        <div class="ar-name">${z.ar}</div>
+                        <div class="ur-meaning">${z.translation}</div>
+                    </div>
+                </div>
+                <div class="card-divider"></div>
+                <div class="ur-benefit">${z.benefit}</div>
+            </div>
+        `).join('');
+    }
+
+    function selectZikr(index) {
+        currentActiveIndex = index;
+        const selected = zikrData[index];
+        
+        displayAr.innerText = selected.ar;
+        displayEn.innerText = selected.en;
+        counterNum.innerText = counts[selected.id];
+        
+        customSelectTrigger.innerText = targets[selected.id];
+        document.querySelectorAll('.custom-option').forEach(opt => {
+            if(parseInt(opt.getAttribute('data-value')) === targets[selected.id]) {
+                opt.classList.add('selected');
+            } else {
+                opt.classList.remove('selected');
+            }
+        });
+        
+        updateStatusIcon(counts[selected.id], targets[selected.id]);
+        renderZikrCards();
+    }
+
+    function updateStatusIcon(count, target) {
+        if(count >= target) {
+            statusIcon.style.color = "var(--ios-green)";
+            statusIcon.parentElement.style.opacity = "1";
+        } else {
+            statusIcon.style.color = "var(--text-sec)";
+            statusIcon.parentElement.style.opacity = "0.5";
+        }
+    }
+
+    tapBtn.onclick = () => {
+        const currentTime = new Date().getTime();
+        if (currentTime - lastTapTime < tapDelay) {
+            return;
+        }
+        lastTapTime = currentTime;
+
+        const currentZikr = zikrData[currentActiveIndex];
+        counts[currentZikr.id]++;
+        
+        localStorage.setItem('tasbeeh_counts', JSON.stringify(counts));
+        counterNum.innerText = counts[currentZikr.id];
+        updateStatusIcon(counts[currentZikr.id], targets[currentZikr.id]);
+        renderZikrCards();
+    };
+
+    customSelectTrigger.onclick = (e) => {
+        e.stopPropagation();
+        customOptions.classList.toggle('open');
+    };
+
+    document.querySelectorAll('.custom-option').forEach(option => {
+        option.onclick = function(e) {
+            e.stopPropagation();
+            const val = parseInt(this.getAttribute('data-value'));
+            const currentZikr = zikrData[currentActiveIndex];
+            
+            targets[currentZikr.id] = val;
+            localStorage.setItem('tasbeeh_targets', JSON.stringify(targets));
+            customSelectTrigger.innerText = val;
+            
+            document.querySelectorAll('.custom-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            customOptions.classList.remove('open');
+            updateStatusIcon(counts[currentZikr.id], targets[currentZikr.id]);
+        };
+    });
+
+    document.onclick = () => {
+        customOptions.classList.remove('open');
+    };
+
+    resetBtn.onclick = () => {
+        const currentZikr = zikrData[currentActiveIndex];
+        alertMsg.innerText = `Are you sure you want to reset the counter for "${currentZikr.en}"?`;
+        iosAlert.classList.add('show');
+    };
+
+    alertCancel.onclick = () => {
+        iosAlert.classList.remove('show');
+    };
+
+    alertConfirm.onclick = () => {
+        const currentZikr = zikrData[currentActiveIndex];
+        counts[currentZikr.id] = 0;
+        localStorage.setItem('tasbeeh_counts', JSON.stringify(counts));
+        counterNum.innerText = 0;
+        updateStatusIcon(0, targets[currentZikr.id]);
+        renderZikrCards();
+        iosAlert.classList.remove('show');
+    };
+
+    iosAlert.onclick = (e) => {
+        if(e.target === iosAlert) {
+            iosAlert.classList.remove('show');
+        }
+    };
+
+    selectZikr(0);
+</script>
+
+</body>
+</html>

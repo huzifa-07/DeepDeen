@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DeepDeen</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Cinzel+Decorative:wght@700&family=Grand+Hotel&display=swap');
+
+        @font-face {
+            font-family: 'LocalArabic';
+            src: url('./arabic.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            padding-top: 90px;
+            padding-bottom: env(safe-area-inset-bottom);
+            overscroll-behavior-y: contain;
+        }
+
+        .top-nav {
+            position: fixed;
+            top: 10px;
+            z-index: 1000;
+            width: 95%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            height: 60px;
+            border-radius: 50px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            
+        }
+
+        .logo-text {
+            font-family: 'Grand Hotel', cursive;
+            font-weight: 400;
+            font-size: 28px;
+            color: #2D6A4F;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 4px rgba(45, 106, 79, 0.2), 1px 1px 1px #fff;
+        }
+
+        .info-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--ios-green);
+            font-size: 22px;
+            transition: transform 0.2s ease;
+        }
+
+        .info-link:active {
+            transform: scale(0.9);
+        }
+
+        .container {
+            width: 100%;
+            display: grid;
+            gap: 12px;
+            padding-bottom: 80px;
+            flex-grow: 1;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .islamic-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            
+            height: auto;
+        }
+
+        .islamic-card:active {
+            transform: scale(0.98);
+        }
+
+        .icon-box-inner {
+            width: 35px;
+            height: 35px;
+            background: rgba(45, 106, 79, 0.1);
+            color: var(--ios-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+        }
+
+        .card-info h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 3px;
+            line-height: 1.0;
+        }
+
+        .card-info p {
+            font-size: 13px;
+            color: var(--text-sec);
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .card-info p.urdu-text {
+            font-family: 'LocalArabic', 'Noto Nastaliq Urdu', serif;
+            font-size: 12px;
+            direction: rtl;
+            text-align: left;
+        }
+
+        .arrow-next {
+            margin-left: auto;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid #c7c7cc;
+            border-bottom: 2px solid #c7c7cc;
+            transform: rotate(-45deg);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body oncontextmenu="return false;">
+
+    <nav class="top-nav">
+        <div class="logo-text">DeepDeen</div>
+        <a href="about_contact.html" class="info-link">
+            <i class="fa-solid fa-circle-info"></i>
+        </a>
+    </nav>
+
+    <div class="container">
+        <a href="allahname.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-kaaba"></i></div>
+            <div class="card-info">
+                <h2>Asma-ul-Husna</h2>
+                <p>99 Divine Names of Allah</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="muhammedname.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-mosque"></i></div>
+            <div class="card-info">
+                <h2>Asma-un-Nabi ﷺ</h2>
+                <p>99 Blessed Names of Muhammad ﷺ</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="quran-audio.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-volume-high"></i></div>
+            <div class="card-info">
+                <h2>Quran Audio</h2>
+                <p>Listen to Sacred Recitations</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="quran-read.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-book-quran"></i></div>
+            <div class="card-info">
+                <h2>Quran Kareem</h2>
+                <p>Read the Holy Scripture</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="hadith.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-hands-praying"></i></div>
+            <div class="card-info">
+                <h2>Hadith Al-Nabawiah</h2>
+                <p>Prophetic Sayings & Traditions</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="tasbeeh.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-circle-dot"></i></div>
+            <div class="card-info">
+                <h2>Tasbeeh Counter</h2>
+                <p>Digital Zikr & Remembrance</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="duas.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-hand-holding-heart"></i></div>
+            <div class="card-info">
+                <h2>Duas</h2>
+                <p>Masnoon & Daily Supplications</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="prayer.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-clock"></i></div>
+            <div class="card-info">
+                <h2>Salah Times</h2>
+                <p>Daily Prayer Schedule</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+
+        <a href="calendar.html" class="islamic-card">
+            <div class="icon-box-inner"><i class="fa-solid fa-calendar-days"></i></div>
+            <div class="card-info">
+                <h2>Hijri Calendar</h2>
+                <p>Islamic Dates & Events</p>
+            </div>
+            <div class="arrow-next"></div>
+        </a>
+    </div>
+
+    <script>
+        async function cacheIcons() {
+            const images = document.querySelectorAll('.cache-img');
+            for (let img of images) {
+                const src = img.src;
+                const cached = localStorage.getItem(src);
+                if (cached) {
+                    img.src = cached;
+                } else {
+                    try {
+                        const response = await fetch(src);
+                        const blob = await response.blob();
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const base64data = reader.result;
+                            localStorage.setItem(src, base64data);
+                        };
+                        reader.readAsDataURL(blob);
+                    } catch (e) {}
+                }
+            }
+        }
+        window.addEventListener('load', cacheIcons);
+    </script>
+</body>
+</html>

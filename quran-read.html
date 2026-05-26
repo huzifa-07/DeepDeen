@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Quran Reader</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700&display=swap');
+
+        @font-face {
+            font-family: 'LocalArabic';
+            src: url('arabic.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'LocalUrdu';
+            src: url('urdu.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background: transparent;
+            padding-top: 75px;
+            padding-left: 20px;
+            padding-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            
+            cursor: pointer;
+        }
+
+        .controls-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            height: 45px;
+            padding: 0 15px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            
+        }
+
+        .custom-select-trigger i {
+            font-size: 12px;
+            color: var(--text-sec);
+            transition: transform 0.3s ease;
+        }
+
+        .custom-select-trigger.active i {
+            transform: rotate(180deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1100;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .custom-options.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-option:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-option:active {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-option.selected {
+            background: #2D6A4F;
+            color: white;
+        }
+
+        .custom-option i {
+            display: none;
+            font-size: 14px;
+            color: var(--ios-green);
+        }
+
+        .custom-option.selected i {
+            display: block;
+            color: white;
+        }
+
+        .dropdown-arabic-text {
+            font-family: 'LocalArabic', 'Cairo', serif !important;
+            font-weight: 600;
+            font-size: 18px;
+            direction: rtl;
+        }
+
+        .size-slider-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 5px 0;
+        }
+        .size-slider-container i {
+            color: var(--text-sec);
+            font-size: 13px;
+        }
+        .size-slider-container i.large-a { font-size: 18px; }
+        
+        .ios-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+        .ios-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ffffff;
+            
+            cursor: pointer;
+        }
+
+        .loader {
+            display: none;
+            color: var(--ios-green);
+            font-size: 24px;
+            margin-top: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        .list-container {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 15px 20px 0px;
+            scrollbar-width: none;
+            box-sizing: border-box;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+
+        .list-scroll-content {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 110px;
+            align-items: center;
+        }
+
+        .hadith-card {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 15px;
+            padding: 22px 20px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--glass-border);
+            
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .meta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hadith-ref {
+            font-family: 'LocalArabic', 'Cairo', serif !important;
+            font-size: 16px;
+            font-weight: 600;
+            background: var(--ios-green);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 8px;
+            direction: rtl;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-icon {
+            color: var(--ios-green);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            transition: opacity 0.2s;
+        }
+        .action-icon:active { opacity: 0.5; }
+
+        .card-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .inner-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.04);
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .text-arabic {
+            font-family: 'LocalArabic', 'Cairo', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1b4332;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.9;
+        }
+
+        .text-translation {
+            font-family: 'LocalUrdu', 'Cairo', sans-serif;
+            color: #2d3748;
+            direction: rtl;
+            text-align: right;
+            margin-top: 0px;
+            line-height: 1.8;
+        }
+
+        .error-message {
+            font-size: 15px;
+            font-weight: 600;
+            color: #d00000;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            padding-bottom: calc(env(safe-area-inset-bottom) / 2);
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .nav-buttons-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 15px;
+            pointer-events: auto;
+        }
+
+        .btn-nav {
+            flex: 1;
+            height: 46px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--ios-green);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            
+            transition: transform 0.2s ease, opacity 0.2s;
+        }
+
+        .btn-nav:active { transform: scale(0.95); }
+        .btn-nav:disabled { opacity: 0.4; pointer-events: none; }
+
+        .ios-toast {
+            position: fixed;
+            bottom: 95px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.1, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .ios-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a href="javascript:void(0)" onclick="history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+
+    <div class="controls-container">
+        <div class="custom-select-wrapper">
+            <div class="custom-select-trigger" id="selectTrigger">
+                <span id="selectedLabel">1. Al-Fatiha</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-options" id="optionsMenu"></div>
+        </div>
+
+        <div class="custom-select-wrapper">
+            <div class="custom-select-trigger" id="ayahSelectTrigger">
+                <span id="selectedAyahLabel">Ayah 1</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-options" id="ayahOptionsMenu"></div>
+        </div>
+    </div>
+
+    <div class="size-slider-container">
+        <i class="fa-solid fa-font"></i>
+        <input type="range" min="22" max="38" value="26" class="ios-slider" id="sizeSlider">
+        <i class="fa-solid fa-font large-a"></i>
+    </div>
+
+    <i class="fa-solid fa-circle-notch loader" id="apiLoader"></i>
+</div>
+
+<div class="list-container" id="listContainer">
+    <div class="list-scroll-content" id="quranContainer"></div>
+</div>
+
+<div class="bottom-nav-bar">
+    <div class="nav-buttons-container">
+        <button class="btn-nav" id="prevBtn">
+            <i class="fa-solid fa-chevron-left"></i> Previous Surah
+        </button>
+        <button class="btn-nav" id="nextBtn">
+            Next Surah <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<div class="ios-toast" id="iosToast">Copied to Clipboard</div>
+
+<script>
+    const apiLoader = document.getElementById('apiLoader');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const quranContainer = document.getElementById('quranContainer');
+    const listContainer = document.getElementById('listContainer');
+    const iosToast = document.getElementById('iosToast');
+
+    const selectTrigger = document.getElementById('selectTrigger');
+    const optionsMenu = document.getElementById('optionsMenu');
+    const selectedLabel = document.getElementById('selectedLabel');
+
+    const ayahSelectTrigger = document.getElementById('ayahSelectTrigger');
+    const ayahOptionsMenu = document.getElementById('ayahOptionsMenu');
+    const selectedAyahLabel = document.getElementById('selectedAyahLabel');
+    
+    let currentSurah = 1;
+
+    const surahNamesEngAr = [
+        {"id":1,"name":"Al-Fatiha","ar":"الفاتحة"},{"id":2,"name":"Al-Baqarah","ar":"البقرة"},{"id":3,"name":"Ali 'Imran","ar":"آل عمران"},{"id":4,"name":"An-Nisa'","ar":"النساء"},{"id":5,"name":"Al-Ma'idah","ar":"المائدة"},{"id":6,"name":"Al-An'am","ar":"الأنعام"},{"id":7,"name":"Al-A'raf","ar":"الأعراف"},{"id":8,"name":"Al-Anfal","ar":"الأنفال"},{"id":9,"name":"At-Tawbah","ar":"التوبة"},{"id":10,"name":"Yunus","ar":"يونس"},{"id":11,"name":"Hud","ar":"هود"},{"id":12,"name":"Yusuf","ar":"يوسف"},{"id":13,"name":"Ar-Ra'd","ar":"الرعد"},{"id":14,"name":"Ibrahim","ar":"إبراهيم"},{"id":15,"name":"Al-Hijr","ar":"الحجر"},{"id":16,"name":"An-Nahl","ar":"النحل"},{"id":17,"name":"Al-Isra'","ar":"الإسراء"},{"id":18,"name":"Al-Kahf","ar":"الكهف"},{"id":19,"name":"Maryam","ar":"مريم"},{"id":20,"name":"Ta-Ha","ar":"طه"},{"id":21,"name":"Al-Anbiya'","ar":"الأنبياء"},{"id":22,"name":"Al-Hajj","ar":"الحج"},{"id":23,"name":"Al-Mu'minun","ar":"المؤمنون"},{"id":24,"name":"An-Nur","ar":"النور"},{"id":25,"name":"Al-Furqan","ar":"الفرقان"},{"id":26,"name":"Ash-Shu'ara'","ar":"الشعرآء"},{"id":27,"name":"An-Naml","ar":"النمل"},{"id":28,"name":"Al-Qasas","ar":"القصص"},{"id":29,"name":"Al-'Ankabut","ar":"العنكبوت"},{"id":30,"name":"Ar-Rum","ar":"الروم"},{"id":31,"name":"Luqman","ar":"لقمان"},{"id":32,"name":"As-Sajdah","ar":"السجدة"},{"id":33,"name":"Al-Ahzab","ar":"الأحزاب"},{"id":34,"name":"Saba'","ar":"سبأ"},{"id":35,"name":"Fatir","ar":"فاطر"},{"id":36,"name":"Ya-Sin","ar":"يس"},{"id":37,"name":"As-Saffat","ar":"الصافات"},{"id":38,"name":"Sad","ar":"ص"},{"id":39,"name":"Az-Zumar","ar":"المر"},{"id":40,"name":"Ghafir","ar":"غافر"},{"id":41,"name":"Fussilat","ar":"فصلت"},{"id":42,"name":"Ash-Shura","ar":"الشورى"},{"id":43,"name":"Az-Zukhruf","ar":"الزخرف"},{"id":44,"name":"Ad-Dukhan","ar":"الدخان"},{"id":45,"name":"Al-Jathiyah","ar":"الجاثية"},{"id":46,"name":"Al-Ahqaf","ar":"الأحقاف"},{"id":47,"name":"Muhammad","ar":"محمد"},{"id":48,"name":"Al-Fath","ar":"الفتح"},{"id":49,"name":"Al-Hujurat","ar":"الحجرات"},{"id":50,"name":"Qaf","ar":"ق"},{"id":51,"name":"Adh-Dhariyat","ar":"الذاريات"},{"id":52,"name":"At-Tur","ar":"الطور"},{"id":53,"name":"An-Najm","ar":"النجم"},{"id":54,"name":"Al-Qamar","ar":"القمَر"},{"id":55,"name":"Ar-Rahman","ar":"الرحمن"},{"id":56,"name":"Al-Waqi'ah","ar":"الواقعة"},{"id":57,"name":"Al-Hadid","ar":"الحديد"},{"id":58,"name":"Al-Mujadilah","ar":"المجادلة"},{"id":59,"name":"Al-Hashr","ar":"الحشر"},{"id":60,"name":"Al-Mumtahanah","ar":"الممتحنة"},{"id":61,"name":"As-Saff","ar":"الصف"},{"id":62,"name":"Al-Jumu'ah","ar":"الجمعة"},{"id":63,"name":"Al-Munafiqun","ar":"المنافقون"},{"id":64,"name":"At-Taghabun","ar":"التغabun"},{"id":65,"name":"At-Talaq","ar":"الطلاق"},{"id":66,"name":"At-Tahrim","ar":"التحريم"},{"id":67,"name":"Al-Mulk","ar":"الملک"},{"id":68,"name":"Al-Qalam","ar":"القلم"},{"id":69,"name":"Al-Haqqah","ar":"الحاقة"},{"id":70,"name":"Al-Ma'arij","ar":"المعارج"},{"id":71,"name":"Nuh","ar":"نوح"},{"id":72,"name":"Al-Jinn","ar":"الجن"},{"id":73,"name":"Al-Muzzammil","ar":"المزمل"},{"id":74,"name":"Al-Muddaththir","ar":"المدثر"},{"id":75,"name":"Al-Qiyamah","ar":"القيامة"},{"id":76,"name":"Al-Insan","ar":"الإنسان"},{"id":77,"name":"Al-Mursalat","ar":"المرسلات"},{"id":78,"name":"An-Naba'","ar":"النبأ"},{"id":79,"name":"An-Nazi'at","ar":"النازعات"},{"id":80,"name":"'Abasa","ar":"عبس"},{"id":81,"name":"At-Takwir","ar":"التكوير"},{"id":82,"name":"Al-Infitar","ar":"الانفطار"},{"id":83,"name":"Al-Mutaffifin","ar":"المطففين"},{"id":84,"name":"Al-Inshiqaq","ar":"الانشقاق"},{"id":85,"name":"Al-Buruj","ar":"البروج"},{"id":86,"name":"At-Tariq","ar":"الطارق"},{"id":87,"name":"Al-A'la","ar":"الأعلى"},{"id":88,"name":"Al-Ghashiyah","ar":"الغاشية"},{"id":89,"name":"Al-Fajr","ar":"الفجر"},{"id":90,"name":"Al-Balad","ar":"البلد"},{"id":91,"name":"Ash-Shams","ar":"الشمس"},{"id":92,"name":"Al-Layl","ar":"الليل"},{"id":93,"name":"Ad-Duha","ar":"الضحى"},{"id":94,"name":"Ash-Sharh","ar":"الشرح"},{"id":95,"name":"At-Tin","ar":"التين"},{"id":96,"name":"Al-'Alaq","ar":"العلق"},{"id":97,"name":"Al-Qadr","ar":"القدر"},{"id":98,"name":"Al-Bayyinah","ar":"البينة"},{"id":99,"name":"Az-Zalzalah","ar":"الزلزلة"},{"id":100,"name":"Al-'Adiyat","ar":"العاديات"},{"id":101,"name":"Al-Qari'ah","ar":"القارعة"},{"id":102,"name":"At-Takathur","ar":"التكاثر"},{"id":103,"name":"Al-'Asr","ar":"العصر"},{"id":104,"name":"Al-Humazah","ar":"الهمزة"},{"id":105,"name":"Al-Fil","ar":"الفيل"},{"id":106,"name":"Quraysh","ar":"قريش"},{"id":107,"name":"Al-Ma'un","ar":"الماعون"},{"id":108,"name":"Al-Kawthar","ar":"الکوثر"},{"id":109,"name":"Al-Kafirun","ar":"الكافرون"},{"id":110,"name":"An-Nasr","ar":"النصر"},{"id":111,"name":"Al-Masad","ar":"المسد"},{"id":112,"name":"Al-Ikhlas","ar":"الإخلاص"},{"id":113,"name":"Al-Falaq","ar":"الفلق"},{"id":114,"name":"An-Nas","ar":"الناس"}
+    ];
+
+    function initDropdown() {
+        optionsMenu.innerHTML = '';
+        surahNamesEngAr.forEach(surah => {
+            const option = document.createElement('div');
+            option.className = `custom-option ${surah.id === currentSurah ? 'selected' : ''}`;
+            option.setAttribute('data-value', surah.id);
+            option.innerHTML = `${surah.id}. ${surah.name} <i class="fa-solid fa-check"></i>`;
+            
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                currentSurah = parseInt(this.getAttribute('data-value'));
+                document.querySelectorAll('#optionsMenu .custom-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedLabel.innerHTML = `${surah.id}. ${surah.name}`;
+                optionsMenu.classList.remove('open');
+                selectTrigger.classList.remove('active');
+                
+                localStorage.removeItem(`last_ayah_surah_${currentSurah}`);
+                localStorage.removeItem(`scroll_pos_surah_${currentSurah}`);
+                fetchQuranData(true);
+            });
+            optionsMenu.appendChild(option);
+        });
+    }
+
+    function initAyahDropdown(totalAyahs) {
+        ayahOptionsMenu.innerHTML = '';
+        const savedAyahNum = parseInt(localStorage.getItem(`last_ayah_surah_${currentSurah}`)) || 1;
+        selectedAyahLabel.textContent = `Ayah ${savedAyahNum}`;
+
+        for (let i = 1; i <= totalAyahs; i++) {
+            const option = document.createElement('div');
+            option.className = `custom-option ${i === savedAyahNum ? 'selected' : ''}`;
+            option.setAttribute('data-value', i);
+            option.innerHTML = `Ayah ${i} <i class="fa-solid fa-check"></i>`;
+
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const selectedAyah = parseInt(this.getAttribute('data-value'));
+                document.querySelectorAll('#ayahOptionsMenu .custom-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedAyahLabel.textContent = `Ayah ${selectedAyah}`;
+                ayahOptionsMenu.classList.remove('open');
+                ayahSelectTrigger.classList.remove('active');
+                
+                localStorage.setItem(`last_ayah_surah_${currentSurah}`, selectedAyah);
+
+                const targetCard = document.getElementById(`ayah-${selectedAyah}`);
+                if (targetCard) {
+                    listContainer.scrollTop = targetCard.offsetTop - 15;
+                    localStorage.setItem(`scroll_pos_surah_${currentSurah}`, listContainer.scrollTop);
+                }
+            });
+            ayahOptionsMenu.appendChild(option);
+        }
+    }
+
+    selectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        ayahOptionsMenu.classList.remove('open');
+        ayahSelectTrigger.classList.remove('active');
+        optionsMenu.classList.toggle('open');
+        selectTrigger.classList.toggle('active');
+    });
+
+    ayahSelectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        optionsMenu.classList.remove('open');
+        selectTrigger.classList.remove('active');
+        ayahOptionsMenu.classList.toggle('open');
+        ayahSelectTrigger.classList.toggle('active');
+    });
+
+    document.addEventListener('click', () => {
+        optionsMenu.classList.remove('open');
+        selectTrigger.classList.remove('active');
+        ayahOptionsMenu.classList.remove('open');
+        ayahSelectTrigger.classList.remove('active');
+    });
+
+    function showToast(message) {
+        iosToast.innerText = message;
+        iosToast.classList.add('show');
+        setTimeout(() => { iosToast.classList.remove('show'); }, 2000);
+    }
+
+    function updateNavButtonsState() {
+        prevBtn.disabled = (currentSurah <= 1);
+        nextBtn.disabled = (currentSurah >= 114);
+    }
+
+    async function fetchQuranData(forceTop = false) {
+        apiLoader.style.display = "block";
+        nextBtn.disabled = true;
+        prevBtn.disabled = true;
+        quranContainer.innerHTML = '';
+
+        localStorage.setItem('cached_quran_surah_num', currentSurah);
+        updateNavButtonsState();
+
+        try {
+            const arabicRes = await fetch(`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${currentSurah}`);
+            const translationRes = await fetch(`https://api.quran.com/api/v4/quran/translations/97?chapter_number=${currentSurah}`);
+            
+            const arabicData = await arabicRes.json();
+            const translationData = await translationRes.json();
+
+            if (arabicData && arabicData.verses && translationData && translationData.translations) {
+                renderSurah(arabicData.verses, translationData.translations);
+                localStorage.setItem(`cached_verses_${currentSurah}`, JSON.stringify(arabicData.verses));
+                localStorage.setItem(`cached_trans_${currentSurah}`, JSON.stringify(translationData.translations));
+            } else {
+                renderError("Failed to parse resource data.");
+            }
+        } catch (e) {
+            const cachedV = localStorage.getItem(`cached_verses_${currentSurah}`);
+            const cachedT = localStorage.getItem(`cached_trans_${currentSurah}`);
+            if (cachedV && cachedT) {
+                renderSurah(JSON.parse(cachedV), JSON.parse(cachedT));
+            } else {
+                renderError("Network error. Please verify your internet connection and try again.");
+            }
+        } finally {
+            apiLoader.style.display = "none";
+            updateNavButtonsState();
+            
+            setTimeout(() => {
+                if (forceTop) {
+                    listContainer.scrollTop = 0;
+                } else {
+                    const savedScroll = localStorage.getItem(`scroll_pos_surah_${currentSurah}`);
+                    if (savedScroll !== null) {
+                        listContainer.scrollTop = parseInt(savedScroll);
+                    } else {
+                        const savedAyahNum = parseInt(localStorage.getItem(`last_ayah_surah_${currentSurah}`));
+                        if (savedAyahNum && savedAyahNum > 0) {
+                            const targetCard = document.getElementById(`ayah-${savedAyahNum}`);
+                            if (targetCard) {
+                                listContainer.scrollTop = targetCard.offsetTop - 15;
+                            }
+                        } else {
+                            listContainer.scrollTop = 0;
+                        }
+                    }
+                }
+            }, 50);
+        }
+    }
+
+    function renderSurah(verses, translations) {
+        quranContainer.innerHTML = '';
+        const currentSize = parseInt(sizeSlider.value);
+        const currentSurahObj = surahNamesEngAr.find(s => s.id === currentSurah);
+        
+        selectedLabel.innerHTML = `${currentSurahObj.id}. ${currentSurahObj.name}`;
+        initAyahDropdown(verses.length);
+
+        if (currentSurah !== 9) {
+            const bismillahCard = document.createElement('div');
+            bismillahCard.className = 'hadith-card';
+            bismillahCard.style.padding = '15px';
+            bismillahCard.style.textAlign = 'center';
+            bismillahCard.innerHTML = `<div class="text-arabic" style="text-align: center; font-size: ${currentSize}px;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+            quranContainer.appendChild(bismillahCard);
+        }
+
+        verses.forEach((verse, index) => {
+            const ayahKey = verse.verse_key;
+            const ayahNumber = ayahKey.split(':')[1];
+            let arabicText = verse.text_uthmani.trim();
+            const transText = translations[index] ? translations[index].text : "Translation not available.";
+
+            const bismillahPrefix = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+            if (currentSurah !== 1 && currentSurah !== 9 && index === 0) {
+                if (arabicText.startsWith(bismillahPrefix)) {
+                    arabicText = arabicText.substring(bismillahPrefix.length).trim();
+                } else if (arabicText.startsWith("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ")) {
+                    arabicText = arabicText.substring("بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ".length).trim();
+                }
+            }
+
+            const card = document.createElement('div');
+            card.className = 'hadith-card';
+            card.id = `ayah-${ayahNumber}`;
+
+            card.innerHTML = `
+                <div class="meta-header">
+                    <div class="hadith-ref">${currentSurahObj.ar} : ${ayahNumber}</div>
+                    <div class="action-buttons">
+                        <i class="fa-regular fa-copy action-icon copy-ayah-btn" title="Copy Text"></i>
+                    </div>
+                </div>
+                
+                <div class="card-divider"></div>
+                <div class="text-arabic" style="font-size: ${currentSize}px;">${arabicText}</div>
+                <div class="inner-divider"></div>
+                <div class="text-translation" style="font-size: ${currentSize - 6}px;">${transText}</div>
+            `;
+
+            card.querySelector('.copy-ayah-btn').onclick = () => {
+                const cleanTrans = transText.replace(/<[^>]*>/g, '');
+                const textToCopy = `Surah ${currentSurahObj.name} [${currentSurah}:${ayahNumber}]\n\nArabic:\n${arabicText}\n\nTranslation:\n${cleanTrans}`;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast("Copied successfully!");
+                }).catch(() => {
+                    showToast("Copy action failed.");
+                });
+            };
+
+            quranContainer.appendChild(card);
+        });
+    }
+
+    function renderError(msg) {
+        quranContainer.innerHTML = `
+            <div class="hadith-card">
+                <div class="error-message"><i class="fa-solid fa-triangle-exclamation"></i> ${msg}</div>
+            </div>`;
+    }
+
+    listContainer.addEventListener('scroll', () => {
+        localStorage.setItem(`scroll_pos_surah_${currentSurah}`, listContainer.scrollTop);
+        
+        const cards = quranContainer.querySelectorAll('.hadith-card[id^="ayah-"]');
+        let currentVisibleAyah = 0;
+        
+        for (let card of cards) {
+            if (card.offsetTop - listContainer.offsetTop <= listContainer.scrollTop + 60) {
+                currentVisibleAyah = parseInt(card.id.replace('ayah-', ''));
+            } else {
+                break;
+            }
+        }
+        
+        if (currentVisibleAyah > 0) {
+            localStorage.setItem(`last_ayah_surah_${currentSurah}`, currentVisibleAyah);
+            selectedAyahLabel.textContent = `Ayah ${currentVisibleAyah}`;
+            
+            document.querySelectorAll('#ayahOptionsMenu .custom-option').forEach(opt => {
+                if (parseInt(opt.getAttribute('data-value')) === currentVisibleAyah) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        } else if (listContainer.scrollTop <= 40) {
+            localStorage.setItem(`last_ayah_surah_${currentSurah}`, 1);
+            selectedAyahLabel.textContent = `Ayah 1`;
+            document.querySelectorAll('#ayahOptionsMenu .custom-option').forEach((opt, idx) => {
+                if (idx === 0) opt.classList.add('selected');
+                else opt.classList.remove('selected');
+            });
+        }
+    });
+
+    sizeSlider.addEventListener('input', function() {
+        const val = parseInt(this.value);
+        document.querySelectorAll('.text-arabic').forEach(el => el.style.fontSize = val + 'px');
+        document.querySelectorAll('.text-translation').forEach(el => el.style.fontSize = (val - 6) + 'px');
+        localStorage.setItem('cached_quran_font_size', val);
+    });
+
+    nextBtn.onclick = () => {
+        if (currentSurah < 114) {
+            currentSurah++;
+            localStorage.removeItem(`last_ayah_surah_${currentSurah}`);
+            localStorage.removeItem(`scroll_pos_surah_${currentSurah}`);
+            fetchQuranData(true);
+        }
+    };
+
+    prevBtn.onclick = () => {
+        if (currentSurah > 1) {
+            currentSurah--;
+            localStorage.removeItem(`last_ayah_surah_${currentSurah}`);
+            localStorage.removeItem(`scroll_pos_surah_${currentSurah}`);
+            fetchQuranData(true);
+        }
+    };
+
+    window.onload = () => {
+        const cachedSurahNum = localStorage.getItem('cached_quran_surah_num');
+        const cachedSize = localStorage.getItem('cached_quran_font_size');
+
+        if (cachedSurahNum) {
+            currentSurah = parseInt(cachedSurahNum);
+        } else {
+            currentSurah = 1;
+        }
+
+        if (cachedSize) {
+            sizeSlider.value = cachedSize;
+        }
+
+        initDropdown();
+        fetchQuranData(false);
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hadith</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        @font-face {
+            font-family: 'LocalArabic';
+            src: url('arabic.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'LocalUrdu';
+            src: url('urdu.ttf') format('truetype');
+            font-display: swap;
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background: transparent;
+            padding-top: 75px;
+            padding-left: 20px;
+            padding-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .controls-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 10px;
+            position: relative;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select-trigger {
+            width: 100%;
+            height: 45px;
+            padding: 0 15px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .custom-select-trigger i {
+            font-size: 12px;
+            color: var(--text-sec);
+            transition: transform 0.3s ease;
+        }
+
+        .custom-select-trigger.active i {
+            transform: rotate(180deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1100;
+            overflow: hidden;
+        }
+
+        .custom-options.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .custom-option {
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .custom-option:not(:last-child) {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-option:active {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .custom-option.selected {
+            background: #2D6A4F;
+            color: white;
+        }
+
+        .custom-option i {
+            display: none;
+            font-size: 14px;
+            color: var(--ios-green);
+        }
+
+        .custom-option.selected i {
+            display: block;
+            color: white;
+        }
+
+        .size-slider-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 5px 0;
+        }
+        .size-slider-container i {
+            color: var(--text-sec);
+            font-size: 13px;
+        }
+        .size-slider-container i.large-a { font-size: 18px; }
+        
+        .ios-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+        .ios-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+
+        .loader {
+            display: none;
+            color: var(--ios-green);
+            font-size: 24px;
+            margin-top: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        .list-container {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 15px 20px 0px;
+            scrollbar-width: none;
+            box-sizing: border-box;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+
+        .list-scroll-content {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 110px;
+            align-items: center;
+        }
+
+        .hadith-card {
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            margin-bottom: 15px;
+            padding: 22px 20px;
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.03);
+        }
+
+        .meta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .hadith-ref {
+            font-size: 12px;
+            font-weight: 700;
+            background: var(--ios-green);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-icon {
+            color: var(--ios-green);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            transition: opacity 0.2s;
+        }
+        .action-icon:active { opacity: 0.5; }
+
+        .card-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .lang-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .text-arabic {
+            font-family: 'LocalArabic', 'Cairo', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #1b4332;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.9;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .text-translation {
+            font-family: 'LocalUrdu', 'Cairo', sans-serif;
+            font-size: 18px;
+            color: var(--text-main);
+            line-height: 1.8;
+            font-weight: 600;
+            -webkit-user-select: none;
+            user-select: none;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .bottom-nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+            padding-bottom: calc(env(safe-area-inset-bottom) / 2);
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        .nav-buttons-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 15px;
+            pointer-events: auto;
+        }
+
+        .btn-nav {
+            flex: 1;
+            height: 46px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--ios-green);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, opacity 0.2s;
+        }
+
+        .btn-nav:active {
+            transform: scale(0.95);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .ios-toast {
+            position: fixed;
+            bottom: 95px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.1, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .ios-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a href="javascript:void(0)" onclick="history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+
+    <div class="controls-container">
+        <div class="custom-select-wrapper">
+            <div class="custom-select-trigger" id="selectTrigger">
+                <span id="selectedLabel">Sahih al-Bukhari</span>
+                <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="custom-options" id="optionsMenu">
+                <div class="custom-option selected" data-value="bukhari">Sahih al-Bukhari <i class="fa-solid fa-check"></i></div>
+                <div class="custom-option" data-value="muslim">Sahih Muslim <i class="fa-solid fa-check"></i></div>
+                <div class="custom-option" data-value="tirmidhi">Jami` at-Tirmidhi <i class="fa-solid fa-check"></i></div>
+                <div class="custom-option" data-value="abudawud">Sunan Abi Dawud <i class="fa-solid fa-check"></i></div>
+                <div class="custom-option" data-value="nasai">Sunan an-Nasa'i <i class="fa-solid fa-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="size-slider-container">
+        <i class="fa-solid fa-font"></i>
+        <input type="range" min="18" max="36" value="24" class="ios-slider" id="sizeSlider">
+        <i class="fa-solid fa-font large-a"></i>
+    </div>
+
+    <i class="fa-solid fa-circle-notch loader" id="apiLoader"></i>
+</div>
+
+<div class="list-container">
+    <div class="list-scroll-content">
+        <div class="hadith-card">
+            <div class="meta-header">
+                <div class="hadith-ref" id="hadithRef">BUKHARI : 1</div>
+                <div class="action-buttons">
+                    <i class="fa-regular fa-copy action-icon" id="copyBtn" title="Copy Hadith"></i>
+                </div>
+            </div>
+            
+            <div class="card-divider"></div>
+            <div class="lang-label" style="text-align: right;">Arabic</div>
+            <div class="text-arabic" id="arabicText">Loading...</div>
+            
+            <div class="card-divider"></div>
+            <div class="lang-label" style="text-align: right;">Urdu Translation</div>
+            <div class="text-translation" id="urduText">Loading...</div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav-bar">
+    <div class="nav-buttons-container">
+        <button class="btn-nav" id="prevBtn">
+            <i class="fa-solid fa-chevron-left"></i> Previous
+        </button>
+        <button class="btn-nav" id="nextBtn">
+            Next <i class="fa-solid fa-chevron-right"></i>
+        </button>
+    </div>
+</div>
+
+<div class="ios-toast" id="iosToast">Copied to Clipboard</div>
+
+<script>
+    const apiLoader = document.getElementById('apiLoader');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const sizeSlider = document.getElementById('sizeSlider');
+    const arabicText = document.getElementById('arabicText');
+    const urduText = document.getElementById('urduText');
+    const hadithRef = document.getElementById('hadithRef');
+    const copyBtn = document.getElementById('copyBtn');
+    const iosToast = document.getElementById('iosToast');
+
+    const selectTrigger = document.getElementById('selectTrigger');
+    const optionsMenu = document.getElementById('optionsMenu');
+    const selectedLabel = document.getElementById('selectedLabel');
+    const allOptions = document.querySelectorAll('.custom-option');
+    
+    let selectedBookValue = "bukhari";
+
+    let currentHadithNumbers = {
+        bukhari: 1,
+        muslim: 1,
+        tirmidhi: 1,
+        abudawud: 1,
+        nasai: 1
+    };
+
+    selectTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        optionsMenu.classList.toggle('open');
+        selectTrigger.classList.toggle('active');
+    });
+
+    allOptions.forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const value = this.getAttribute('data-value');
+            const label = this.textContent.trim();
+
+            selectedBookValue = value;
+            selectedLabel.textContent = label;
+
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+
+            optionsMenu.classList.remove('open');
+            selectTrigger.classList.remove('active');
+
+            localStorage.setItem('cached_hadith_book', selectedBookValue);
+            fetchHadith(selectedBookValue, 0);
+        });
+    });
+
+    document.addEventListener('click', () => {
+        optionsMenu.classList.remove('open');
+        selectTrigger.classList.remove('active');
+    });
+
+    function showToast(message) {
+        iosToast.innerText = message;
+        iosToast.classList.add('show');
+        setTimeout(() => { iosToast.classList.remove('show'); }, 2000);
+    }
+
+    function updateNavButtonsState() {
+        prevBtn.disabled = (currentHadithNumbers[selectedBookValue] <= 1);
+    }
+
+    async function fetchHadith(book, direction = 0) {
+        apiLoader.style.display = "block";
+        nextBtn.disabled = true;
+        prevBtn.disabled = true;
+        
+        if (direction === 1) {
+            currentHadithNumbers[book]++;
+        } else if (direction === -1 && currentHadithNumbers[book] > 1) {
+            currentHadithNumbers[book]--;
+        }
+        
+        const currentNum = currentHadithNumbers[book];
+        updateNavButtonsState();
+        
+        arabicText.innerText = "Loading...";
+        urduText.innerText = "Loading...";
+
+        fetchDirectCDNMirror(book, currentNum);
+    }
+
+    async function fetchDirectCDNMirror(book, currentNum) {
+        try {
+            const [urRes, arRes] = await Promise.all([
+                fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/urd-${book}.json`),
+                fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/ara-${book}.json`)
+            ]);
+            
+            const urData = await urRes.json();
+            const arData = await arRes.json();
+            
+            let matchedUrdu = "Urdu translation updating.";
+            let matchedArabic = "Arabic text segment processing.";
+            
+            if(urData && urData.hadiths) {
+                const foundUr = urData.hadiths.find(h => parseInt(h.hadithnumber) === currentNum);
+                if(foundUr) matchedUrdu = foundUr.text;
+                else if(urData.hadiths[currentNum - 1]) matchedUrdu = urData.hadiths[currentNum - 1].text;
+            }
+
+            if(arData && arData.hadiths) {
+                const foundAr = arData.hadiths.find(h => parseInt(h.hadithnumber) === currentNum);
+                if(foundAr) matchedArabic = foundAr.text;
+                else if(arData.hadiths[currentNum - 1]) matchedArabic = arData.hadiths[currentNum - 1].text;
+            }
+            
+            updateUI(matchedArabic, matchedUrdu, `${book.toUpperCase()} : ${currentNum}`, book);
+        } catch(e) {
+            const cachedAr = localStorage.getItem('cached_hadith_ar') || "Network connection down.";
+            const cachedUr = localStorage.getItem('cached_hadith_ur') || "Internet check karein.";
+            const cachedRef = localStorage.getItem('cached_hadith_ref') || "OFFLINE";
+            updateUI(cachedAr, cachedUr, cachedRef, book);
+        } finally {
+            apiLoader.style.display = "none";
+            updateNavButtonsState();
+            nextBtn.disabled = false;
+        }
+    }
+
+    function updateUI(arabic, urdu, reference, book) {
+        let cleanAr = arabic.replace(/<\/?[^>]+(>|$)/g, "").trim();
+        const cleanUr = urdu.replace(/<\/?[^>]+(>|$)/g, "").trim();
+
+        arabicText.innerText = cleanAr || "Arabic text segment processing.";
+        urduText.innerText = cleanUr || "Urdu tarjuma is ref par mojood nahi.";
+        hadithRef.innerText = reference;
+
+        localStorage.setItem('cached_hadith_ar', cleanAr);
+        localStorage.setItem('cached_hadith_ur', cleanUr);
+        localStorage.setItem('cached_hadith_ref', reference);
+        localStorage.setItem('cached_hadith_book', book);
+        localStorage.setItem('current_numbers_tracker', JSON.stringify(currentHadithNumbers));
+    }
+
+    sizeSlider.addEventListener('input', function() {
+        const val = this.value;
+        arabicText.style.fontSize = val + 'px';
+        urduText.style.fontSize = (parseInt(val) - 6) + 'px';
+        localStorage.setItem('cached_hadith_font_size', val);
+    });
+
+    copyBtn.onclick = () => {
+        const textToCopy = `${hadithRef.innerText}\n\nArabic:\n${arabicText.innerText}\n\nUrdu Tarjuma:\n${urduText.innerText}`;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast("Hadith Copied!");
+        }).catch(() => {
+            showToast("Copy failed");
+        });
+    };
+
+    nextBtn.onclick = () => {
+        fetchHadith(selectedBookValue, 1);
+    };
+
+    prevBtn.onclick = () => {
+        fetchHadith(selectedBookValue, -1);
+    };
+
+    window.onload = () => {
+        const cachedAr = localStorage.getItem('cached_hadith_ar');
+        const cachedUr = localStorage.getItem('cached_hadith_ur');
+        const cachedRef = localStorage.getItem('cached_hadith_ref');
+        const cachedBook = localStorage.getItem('cached_hadith_book');
+        const cachedSize = localStorage.getItem('cached_hadith_font_size');
+        const savedTracker = localStorage.getItem('current_numbers_tracker');
+
+        if(savedTracker) {
+            currentHadithNumbers = JSON.parse(savedTracker);
+        }
+
+        if(cachedSize) {
+            sizeSlider.value = cachedSize;
+            arabicText.style.fontSize = cachedSize + 'px';
+            urduText.style.fontSize = (parseInt(cachedSize) - 6) + 'px';
+        }
+
+        if (cachedBook) {
+            selectedBookValue = cachedBook;
+            const matchingOption = document.querySelector(`.custom-option[data-value="${selectedBookValue}"]`);
+            if(matchingOption) {
+                selectedLabel.textContent = matchingOption.textContent.trim();
+                allOptions.forEach(opt => opt.classList.remove('selected'));
+                matchingOption.classList.add('selected');
+            }
+        }
+
+        if(cachedAr && cachedUr && cachedRef) {
+            arabicText.innerText = cachedAr;
+            urduText.innerText = cachedUr;
+            hadithRef.innerText = cachedRef;
+            updateNavButtonsState();
+        } else {
+            fetchHadith(selectedBookValue, 0);
+        }
+    };
+</script>
+
+</body>
+</html>

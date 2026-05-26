@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ur" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Duas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        @font-face {
+            font-family: 'ArabicFont';
+            src: url('arabic.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'UrduFont';
+            src: url('urdu.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #515154;
+            --highlight-glow: rgba(45, 106, 79, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0; padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            padding: 50px 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute; top: 20px; left: 20px;
+            width: 40px; height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; color: var(--text-main);
+
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .duas-scroll-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px 20px 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scrollbar-width: none;
+        }
+        .duas-scroll-container::-webkit-scrollbar { display: none; }
+
+        .dua-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 22px;
+            
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .dua-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(45, 106, 79, 0.1);
+            padding-bottom: 8px;
+        }
+
+        .dua-title { 
+            font-size: 16px; 
+            font-weight: 700; 
+            color: var(--ios-green); 
+            text-transform: uppercase;
+        }
+
+        .copy-icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--ios-green);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+        }
+
+        .dua-arabic { 
+            font-family: 'ArabicFont', sans-serif; 
+            font-size: 24px; 
+            color: #000000; 
+            line-height: 1.8;
+            margin-bottom: 15px;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .translation-block {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0,0,0,0.05);
+        }
+
+        .lang-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ios-green);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .dua-urdu { 
+            font-family: 'UrduFont', sans-serif; 
+            font-size: 18px; 
+            color: #1c1c1e; 
+            line-height: 1.6;
+            text-align: right;
+            direction: rtl;
+        }
+
+        .dua-reference {
+            font-size: 11px;
+            color: var(--text-sec);
+            margin-top: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a onclick="history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+</div>
+
+<div class="duas-scroll-container" id="duasContainer"></div>
+
+<script>
+    let duasDatabase = [];
+    const container = document.getElementById('duasContainer');
+
+    async function fetchDuas() {
+        try {
+            const response = await fetch('duas.json');
+            duasDatabase = await response.json();
+            displayAllDuas();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function displayAllDuas() {
+        container.innerHTML = '';
+        duasDatabase.forEach(dua => {
+            const card = document.createElement('div');
+            card.className = 'dua-card';
+            card.innerHTML = `
+                <div class="dua-header">
+                    <span class="dua-title">${dua.title}</span>
+                    <button class="copy-icon-btn" onclick="copySingleDua(this)" data-title="${dua.title}" data-arabic="${dua.arabic}" data-urdu="${dua.urdu}" data-ref="${dua.reference}">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="dua-arabic">${dua.arabic}</div>
+                
+                <div class="translation-block">
+                    <div class="lang-label">Urdu Tarjuma</div>
+                    <div class="dua-urdu">${dua.urdu}</div>
+                </div>
+
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function copySingleDua(btn) {
+        const text = `${btn.getAttribute('data-title')}\n\n${btn.getAttribute('data-arabic')}\n\nUrdu: ${btn.getAttribute('data-urdu')}\n\n(${btn.getAttribute('data-ref')})`;
+        navigator.clipboard.writeText(text);
+    }
+
+    fetchDuas();
+</script>
+
+</body>
+</html>

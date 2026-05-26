@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>About & Contact</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            min-height: 100vh;
+            width: 100%;
+            overscroll-behavior-y: none;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-top: 75px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            z-index: 1001;
+        }
+
+        .profile-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            width: 90%;
+            max-width: 450px;
+            padding: 30px 25px;
+            
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .avatar-container {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 15px;
+            position: relative;
+            border-radius: 50%;
+            
+            border: 3px solid white;
+            background: linear-gradient(135deg, #2D6A4F 0%, #52b788 100%);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .avatar-fallback {
+            color: white;
+            font-size: 36px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 5px;
+        }
+
+        .profile-title {
+            font-size: 13px;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.08);
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .about-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            text-align: justify;
+            text-align-last: center;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ios-green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            width: 90%;
+            max-width: 450px;
+            margin: 10px 0 12px 10px;
+            text-align: left;
+        }
+
+        .contact-list {
+            width: 90%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 60px;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-main);
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .contact-item:active, .contact-item:hover {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: var(--glass-border);
+        }
+
+        .contact-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #ffffff;
+            background: var(--ios-green);
+            
+        }
+
+        .twitter-img-icon {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .contact-label {
+            font-size: 11px;
+            color: var(--text-sec);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-val {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .arrow-right {
+            color: var(--text-sec);
+            font-size: 14px;
+        }
+
+        .ios-alert-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .ios-alert-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ios-alert-box {
+            background: rgba(255, 255, 255, 0.9);
+            width: 270px;
+            border-radius: 14px;
+            text-align: center;
+            
+            overflow: hidden;
+            transform: scale(1.1);
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .ios-alert-overlay.show .ios-alert-box {
+            transform: scale(1);
+        }
+
+        .ios-alert-content {
+            padding: 20px 16px;
+        }
+
+        .ios-alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .ios-alert-msg {
+            font-size: 13px;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .ios-alert-buttons {
+            display: flex;
+            border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .ios-alert-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 10px;
+            font-size: 17px;
+            cursor: pointer;
+            outline: none;
+            color: #007aff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a href="javascript:history.back()" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+
+    <div class="profile-card">
+        <div class="avatar-container">
+            <img src="https://i.postimg.cc/d18NYNpy/image.jpg" alt="Huzaifa Awan" class="avatar-img" onerror="this.style.display='none';">
+            <div class="avatar-fallback">HA</div>
+        </div>
+        <div class="profile-name">Huzaifa Awan</div>
+        <div class="profile-title">Founder of DeepDeen</div>
+        <div class="divider"></div>
+        <p class="about-text">
+            Welcome to DeepDeen! Developed by Huzaifa Awan, DeepDeen is a comprehensive Islamic platform designed to enrich your spiritual journey. It features Asma-ul-Husna, Asma-un-Nabi ﷺ, an interactive Quran Audio player, readable Quran Kareem scripture, authentic Hadith Al-Nabawiah, a digital Tasbeeh Counter, Masnoon Duas, accurate Salah Times, and a complete Hijri Calendar. My goal is to make daily remembrances and Islamic learning beautiful and easily accessible for everyone.
+        </p>
+    </div>
+</div>
+
+<div class="section-title">Connect With Me</div>
+
+<div class="contact-list">
+    <a href="intent://send/923121979619#Intent;scheme=smsto;package=com.whatsapp;action=android.intent.action.SENDTO;end" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box"><i class="fa-brands fa-whatsapp"></i></div>
+            <div class="contact-details">
+                <span class="contact-label">WhatsApp</span>
+                <span class="contact-val">0312 1979619</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+
+    <a href="fb://facewebmodal/fbcid=fb&page=1BBBD4pKgX" onerror="this.href='https://www.facebook.com/share/1BBBD4pKgX/';" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box"><i class="fa-brands fa-facebook-f"></i></div>
+            <div class="contact-details">
+                <span class="contact-label">Facebook</span>
+                <span class="contact-val">Huzaifa Awan</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+
+    <a href="intent://instagram.com/_u/huzifa_07/#Intent;package=com.instagram.android;scheme=https;end" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box"><i class="fa-brands fa-instagram"></i></div>
+            <div class="contact-details">
+                <span class="contact-label">Instagram</span>
+                <span class="contact-val">@huzifa_07</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+
+    <a href="intent://tiktok.com/@huzifa_07#Intent;package=com.zhiliaoapp.musically;scheme=https;end" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box"><i class="fa-brands fa-tiktok"></i></div>
+            <div class="contact-details">
+                <span class="contact-label">TikTok</span>
+                <span class="contact-val">@huzifa_07</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+
+    <a href="tg://resolve?domain=huzifa_07" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box"><i class="fa-brands fa-telegram"></i></div>
+            <div class="contact-details">
+                <span class="contact-label">Telegram</span>
+                <span class="contact-val">@huzifa_07</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+
+    <a href="intent://twitter.com/huzifa_07#Intent;package=com.twitter.android;scheme=https;end" class="contact-item">
+        <div class="contact-left">
+            <div class="icon-box">
+                <img src="https://i.postimg.cc/YqYpGtgK/twitter-x-logo-png-seeklogo-492397.png" alt="X" class="twitter-img-icon">
+            </div>
+            <div class="contact-details">
+                <span class="contact-label">X / Twitter</span>
+                <span class="contact-val">@huzifa_07</span>
+            </div>
+        </div>
+        <i class="fa-solid fa-chevron-right arrow-right"></i>
+    </a>
+</div>
+
+<div class="ios-alert-overlay" id="iosAlert">
+    <div class="ios-alert-box">
+        <div class="ios-alert-content">
+            <div class="ios-alert-title" id="alertTitle">JazakAllah!</div>
+            <div class="ios-alert-msg" id="alertMsg">Thank you for connecting with me.</div>
+        </div>
+        <div class="ios-alert-buttons">
+            <button class="ios-alert-btn" id="alertClose">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const iosAlert = document.getElementById('iosAlert');
+    const alertClose = document.getElementById('alertClose');
+    const contactItems = document.querySelectorAll('.contact-item');
+
+    contactItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            const platform = this.querySelector('.contact-label').innerText;
+            document.getElementById('alertTitle').innerText = "Opening " + platform;
+            document.getElementById('alertMsg').innerText = "Redirecting you to Huzaifa Awan's official profile.";
+            iosAlert.classList.add('show');
+            
+            setTimeout(() => {
+                iosAlert.classList.remove('show');
+            }, 1500);
+        });
+    });
+
+    alertClose.onclick = () => {
+        iosAlert.classList.remove('show');
+    };
+</script>
+
+</body>
+</html>

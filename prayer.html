@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Prayer Times</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+
+        @font-face {
+            font-family: 'LocalArabic';
+            src: url('arabic.ttf') format('truetype');
+        }
+
+        :root {
+            --ios-green: #2D6A4F; 
+            --ios-bg: #f2f2f7;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --text-main: #1d1d1f;
+            --text-sec: #86868b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .top-section {
+            position: relative;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            background: transparent;
+            padding-top: 50px;
+            padding-left: 20px;
+            padding-right: 20px;
+            flex-shrink: 0;
+        }
+
+        .back-circle {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            
+        }
+
+        .search-container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            color: var(--text-sec);
+            font-size: 14px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 35px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-sec);
+        }
+
+        .btn-location {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: var(--ios-green);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            
+        }
+
+        .location-display {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b4332;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .date-display {
+            font-size: 13px;
+            color: var(--text-sec);
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .list-container {
+            width: 100%;
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 15px 20px 0px;
+            scrollbar-width: none;
+            box-sizing: border-box;
+        }
+        .list-container::-webkit-scrollbar { display: none; }
+
+        .list-scroll-content {
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 100px;
+            align-items: center;
+        }
+
+        .prayer-item {
+            background: rgba(255, 255, 255, 0.4);
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid transparent;
+            
+            transition: all 0.2s ease;
+        }
+
+        .prayer-item.next-prayer {
+            background: rgba(255, 255, 255, 0.85);
+            border-color: var(--ios-green);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .prayer-en {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        .prayer-item.next-prayer .prayer-en {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prayer-item.next-prayer .prayer-en::after {
+            content: 'NEXT';
+            font-size: 9px;
+            font-weight: 700;
+            background: var(--ios-green);
+            color: white;
+            padding: 1px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .prayer-ar {
+            font-family: 'LocalArabic', 'Cairo', serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1b4332;
+            direction: rtl;
+        }
+
+        .right-content {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .time-display {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ios-green);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .rakaat-info {
+            font-size: 12px;
+            color: #495057;
+            line-height: 1.4;
+            width: 100%;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .loader {
+            display: none;
+            color: var(--ios-green);
+            font-size: 24px;
+            margin-top: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ios-alert-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .ios-alert-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .ios-alert-box {
+            background: rgba(255, 255, 255, 0.9);
+            width: 270px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            transform: scale(1.1);
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .ios-alert-overlay.show .ios-alert-box {
+            transform: scale(1);
+        }
+
+        .ios-alert-content {
+            padding: 20px 16px;
+        }
+
+        .ios-alert-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .ios-alert-msg {
+            font-size: 13px;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        .ios-alert-buttons {
+            display: flex;
+            border-top: 0.5px solid rgba(0, 0, 0, 0.15);
+        }
+
+        .ios-alert-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 12px 10px;
+            font-size: 17px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .ios-alert-btn.confirm {
+            color: #007aff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-section">
+    <a href="javascript:void(0);" onclick="history.back(); return false;" class="back-circle"><i class="fa-solid fa-chevron-left"></i></a>
+
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" class="search-input" id="citySearch" placeholder="Search City (e.g. London, Karachi)">
+        </div>
+        <button class="btn-location" id="locationBtn">
+            <i class="fa-solid fa-location-arrow"></i>
+        </button>
+    </div>
+
+    <div class="location-display" id="locationText">Loading...</div>
+    <div class="date-display" id="dateText">---</div>
+    <i class="fa-solid fa-circle-notch loader" id="apiLoader"></i>
+</div>
+
+<div class="list-container">
+    <div class="list-scroll-content" id="prayerContainer"></div>
+</div>
+
+<div class="ios-alert-overlay" id="iosAlert">
+    <div class="ios-alert-box">
+        <div class="ios-alert-content">
+            <div class="ios-alert-title" id="alertTitle">Location Error</div>
+            <div class="ios-alert-msg" id="alertMsg">Location access denied. Please type city name manually.</div>
+        </div>
+        <div class="ios-alert-buttons">
+            <button class="ios-alert-btn confirm" id="alertConfirm">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const prayerConfig = {
+        Fajr: { ar: "الفجر", rakaat: "2 Sunnah + 2 Farz", icon: "fa-cloud-sun" },
+        Sunrise: { ar: "الشروق", rakaat: "Ishraq Time", icon: "fa-sun" },
+        Dhuhr: { ar: "الظهر", rakaat: "4 Sunnah + 4 Farz + 2 Sunnah + 2 Nafl", icon: "fa-sun" },
+        Asr: { ar: "العصر", rakaat: "4 Sunnah + 4 Farz", icon: "fa-cloud" },
+        Maghrib: { ar: "المغرب", rakaat: "3 Farz + 2 Sunnah + 2 Nafl", icon: "fa-moon" },
+        Isha: { ar: "العشاء", rakaat: "4 Sunnah + 4 Farz + 2 Sunnah + 2 Nafl + 3 Witr", icon: "fa-cloud-moon" }
+    };
+
+    const defaultCity = "Lahore";
+    const prayerContainer = document.getElementById('prayerContainer');
+    const locationText = document.getElementById('locationText');
+    const dateText = document.getElementById('dateText');
+    const citySearch = document.getElementById('citySearch');
+    const locationBtn = document.getElementById('locationBtn');
+    const apiLoader = document.getElementById('apiLoader');
+    
+    const iosAlert = document.getElementById('iosAlert');
+    const alertConfirm = document.getElementById('alertConfirm');
+    const alertMsg = document.getElementById('alertMsg');
+    const alertTitle = document.getElementById('alertTitle');
+
+    function formatTo12Hour(timeStr) {
+        if(!timeStr) return "--:--";
+        let [hours, minutes] = timeStr.split(':');
+        hours = parseInt(hours);
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        return `${hours}:${minutes} ${ampm}`;
+    }
+
+    function showAlert(title, message) {
+        alertTitle.innerText = title;
+        alertMsg.innerText = message;
+        iosAlert.classList.add('show');
+    }
+
+    alertConfirm.onclick = () => {
+        iosAlert.classList.remove('show');
+    };
+
+    iosAlert.onclick = (e) => {
+        if(e.target === iosAlert) {
+            iosAlert.classList.remove('show');
+        }
+    };
+
+    async function fetchPrayerTimes(query, isCoords = false) {
+        apiLoader.style.display = "block";
+        let url = "";
+        
+        if (isCoords) {
+            url = `https://api.aladhan.com/v1/timings?latitude=${query.lat}&longitude=${query.lng}&method=2`;
+        } else {
+            url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(query)}&country=&method=2`;
+        }
+
+        try {
+            const response = await AppFetch(url);
+            if(response.code === 200) {
+                const data = response.data;
+                renderPrayers(data.timings);
+                
+                if(isCoords) {
+                    locationText.innerHTML = `<i class="fa-solid fa-location-dot"></i> Near Your Location`;
+                } else {
+                    locationText.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${query.toUpperCase()}`;
+                    localStorage.setItem('last_searched_prayer_city', query);
+                }
+                
+                dateText.innerText = `${data.date.gregorian.date} | ${data.date.hijri.date} ${data.date.hijri.month.en}`;
+            } else {
+                showAlert("Error", "City not found. Please try again.");
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            apiLoader.style.display = "none";
+        }
+    }
+
+    async function AppFetch(url) {
+        const res = await fetch(url);
+        return await res.json();
+    }
+
+    function renderPrayers(timings) {
+        const order = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
+        let htmlContent = "";
+        
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        let nextPrayerKey = "";
+
+        for (let key of order) {
+            if (timings[key]) {
+                const [h, m] = timings[key].split(':');
+                const pMinutes = parseInt(h) * 60 + parseInt(m);
+                if (pMinutes > currentMinutes) {
+                    nextPrayerKey = key;
+                    break;
+                }
+            }
+        }
+        if (!nextPrayerKey) nextPrayerKey = "Fajr";
+
+        order.forEach(key => {
+            if(prayerConfig[key]) {
+                const config = prayerConfig[key];
+                const formattedTime = formatTo12Hour(timings[key]);
+                const isNext = key === nextPrayerKey;
+
+                htmlContent += `
+                    <div class="prayer-item ${isNext ? 'active-card next-prayer' : ''}">
+                        <div class="item-row">
+                            <div class="info-left">
+                                <div class="prayer-en">${key}</div>
+                                <div class="prayer-ar">${config.ar}</div>
+                            </div>
+                            <div class="right-content">
+                                <div class="time-display">${formattedTime}</div>
+                            </div>
+                        </div>
+                        <div class="card-divider"></div>
+                        <div class="rakaat-info">${config.rakaat}</div>
+                    </div>
+                `;
+            }
+        });
+        prayerContainer.innerHTML = htmlContent;
+    }
+
+    citySearch.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter' && this.value.trim() !== "") {
+            fetchPrayerTimes(this.value.trim(), false);
+        }
+    });
+
+    locationBtn.onclick = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const coords = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                fetchPrayerTimes(coords, true);
+            }, () => {
+                showAlert("Location Access", "Location access denied. Please type city name manually.");
+            });
+        } else {
+            showAlert("Not Supported", "Geolocation not supported by your browser.");
+        }
+    };
+
+    window.onload = () => {
+        const cacheCity = localStorage.getItem('last_searched_prayer_city');
+        fetchPrayerTimes(cacheCity ? cacheCity : defaultCity, false);
+    };
+</script>
+
+</body>
+</html>
